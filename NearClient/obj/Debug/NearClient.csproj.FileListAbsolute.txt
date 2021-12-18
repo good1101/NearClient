@@ -1,0 +1,9 @@
+C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.csprojAssemblyReference.cache
+C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.csproj.CoreCompileInputs.cache
+C:\Users\Alex\source\repos\NearClient\NearClient\bin\Debug\NearClient.dll
+C:\Users\Alex\source\repos\NearClient\NearClient\bin\Debug\NearClient.pdb
+C:\Users\Alex\source\repos\NearClient\NearClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Alex\source\repos\NearClient\NearClient\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.csproj.CopyComplete
+C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.dll
+C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.pdb
