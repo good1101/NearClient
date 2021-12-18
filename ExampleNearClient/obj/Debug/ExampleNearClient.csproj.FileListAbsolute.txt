@@ -10,3 +10,15 @@ C:\Users\Alex\source\repos\NearClient\ExampleNearClient\obj\Debug\ExampleNearCli
 C:\Users\Alex\source\repos\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.csproj.CopyComplete
 C:\Users\Alex\source\repos\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.exe
 C:\Users\Alex\source\repos\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.pdb
+E:\Git\NearClient\ExampleNearClient\bin\Debug\ExampleNearClient.exe.config
+E:\Git\NearClient\ExampleNearClient\bin\Debug\ExampleNearClient.exe
+E:\Git\NearClient\ExampleNearClient\bin\Debug\ExampleNearClient.pdb
+E:\Git\NearClient\ExampleNearClient\bin\Debug\NearClient.dll
+E:\Git\NearClient\ExampleNearClient\bin\Debug\Newtonsoft.Json.dll
+E:\Git\NearClient\ExampleNearClient\bin\Debug\NearClient.pdb
+E:\Git\NearClient\ExampleNearClient\bin\Debug\Newtonsoft.Json.xml
+E:\Git\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.csprojAssemblyReference.cache
+E:\Git\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.csproj.CoreCompileInputs.cache
+E:\Git\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.csproj.CopyComplete
+E:\Git\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.exe
+E:\Git\NearClient\ExampleNearClient\obj\Debug\ExampleNearClient.pdb

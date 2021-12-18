@@ -7,3 +7,12 @@ C:\Users\Alex\source\repos\NearClient\NearClient\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.csproj.CopyComplete
 C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.dll
 C:\Users\Alex\source\repos\NearClient\NearClient\obj\Debug\NearClient.pdb
+E:\Git\NearClient\NearClient\bin\Debug\NearClient.dll
+E:\Git\NearClient\NearClient\bin\Debug\NearClient.pdb
+E:\Git\NearClient\NearClient\bin\Debug\Newtonsoft.Json.dll
+E:\Git\NearClient\NearClient\bin\Debug\Newtonsoft.Json.xml
+E:\Git\NearClient\NearClient\obj\Debug\NearClient.csprojAssemblyReference.cache
+E:\Git\NearClient\NearClient\obj\Debug\NearClient.csproj.CoreCompileInputs.cache
+E:\Git\NearClient\NearClient\obj\Debug\NearClient.csproj.CopyComplete
+E:\Git\NearClient\NearClient\obj\Debug\NearClient.dll
+E:\Git\NearClient\NearClient\obj\Debug\NearClient.pdb
