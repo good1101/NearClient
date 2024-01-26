@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using NearClient.Utilities.Exceptions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -19,6 +20,7 @@ namespace NearClient.Utilities
             {
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.Timeout = TimeSpan.FromSeconds(100);
+                
                 HttpResponseMessage response;
 
                 if (!string.IsNullOrEmpty(json))
@@ -38,6 +40,13 @@ namespace NearClient.Utilities
                     dynamic rawResult = JObject.Parse(jsonString);
                     if (rawResult.error != null && rawResult.error.data != null)
                     {
+                        if(rawResult.error.cause != null)
+                        {
+                            if (rawResult.error.cause.name == "TIMEOUT_ERROR")
+                                throw new TimeoutErrorException();
+                            if (rawResult.error.cause.name == "UNKNOWN_ACCOUNT")
+                                throw new UnknownAccountException();
+                        }
                         throw new Exception($"[{rawResult.error.code}]: {rawResult.error.name}: {rawResult.error.data}");
                     }
                     return rawResult.result;

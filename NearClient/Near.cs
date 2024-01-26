@@ -109,6 +109,25 @@ namespace NearClient
             return new Account(_connection, accountId);
         }
 
+        public async Task<AccountState> AccountStateAsync(string accountId)
+        {
+            var rawState = await _connection.Provider.QueryAsync($"account/{ accountId}", "");
+            if (rawState == null)
+            {
+                return null;
+            }
+             var state = new AccountState()
+            {
+                AccountId = accountId,
+                Staked = rawState.staked ?? null,
+                Locked = rawState.locked,
+                Amount = rawState.amount,
+                CodeHash = rawState.code_hash,
+                StoragePaidAt = rawState.storage_paid_at,
+                StorageUsage = rawState.storage_usage
+            };
+            return state;
+        }
 
 
     }

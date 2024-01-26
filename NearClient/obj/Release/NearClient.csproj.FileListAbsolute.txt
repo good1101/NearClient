@@ -1,0 +1,9 @@
+E:\Git\NearClient\NearClient\obj\Release\NearClient.csprojAssemblyReference.cache
+E:\Git\NearClient\NearClient\obj\Release\NearClient.csproj.CoreCompileInputs.cache
+E:\Git\NearClient\NearClient\bin\Release\NearClient.dll
+E:\Git\NearClient\NearClient\bin\Release\NearClient.pdb
+E:\Git\NearClient\NearClient\bin\Release\Newtonsoft.Json.dll
+E:\Git\NearClient\NearClient\bin\Release\Newtonsoft.Json.xml
+E:\Git\NearClient\NearClient\obj\Release\NearClient.csproj.CopyComplete
+E:\Git\NearClient\NearClient\obj\Release\NearClient.dll
+E:\Git\NearClient\NearClient\obj\Release\NearClient.pdb

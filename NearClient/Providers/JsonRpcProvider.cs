@@ -1,4 +1,5 @@
 ﻿using NearClient.Utilities;
+using NearClient.Utilities.Exceptions;
 using Newtonsoft.Json;
 using System;
 using System.Dynamic;
@@ -11,7 +12,7 @@ namespace NearClient.Providers
     public class JsonRpcProvider : Provider
     {
         private readonly ConnectionInfo _connection;
-       
+        const int COUNT_TRY_COMMIT = 5;
         public JsonRpcProvider(string url)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -89,15 +90,9 @@ namespace NearClient.Providers
             parameters[0] = path;
             parameters[1] = data;
 
-            try
-            {
-                var result = await SendJsonRpc("query", parameters);
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Quering {path} failed: { e.Message}.");
-            }
+            var result = await SendJsonRpc("query", parameters);
+            return result;
+
         }
 
         public override async Task<FinalExecutionOutcome> SendTransactionAsync(SignedTransaction signedTransaction)
@@ -105,9 +100,22 @@ namespace NearClient.Providers
             var bytes = signedTransaction.ToByteArray();
             var parameters = new dynamic[1];
             parameters[0] = Convert.ToBase64String(bytes, 0, bytes.Length);
-            var rawOutcomeResult = await SendJsonRpc("broadcast_tx_commit", parameters);
-            var result = FinalExecutionOutcome.FromDynamicJsonObject(rawOutcomeResult);
-            return result;
+            int countError = 0;
+            while (COUNT_TRY_COMMIT > countError)
+            {
+                try
+                {
+                    var rawOutcomeResult = await SendJsonRpc("broadcast_tx_commit", parameters);
+                    var result = FinalExecutionOutcome.FromDynamicJsonObject(rawOutcomeResult);
+                    return result;
+                }
+                catch (TimeoutErrorException)
+                {
+                    countError++;
+                    continue;
+                }
+            }
+            throw new FailureTimeoutException();
         }
 
         public override async Task<dynamic> GetAccountChangesAcync(string accountId)
@@ -128,16 +136,10 @@ namespace NearClient.Providers
             request.id = _id++;
             request.jsonrpc = "2.0";
             var requestString = JsonConvert.SerializeObject(request).Replace("\"parameters\":", "\"params\":");
-            try
-            {
-                var result = await Web.FetchJsonAsync(_connection, requestString);
-                return result;
-            }
-            catch (HttpException e)
-            {
-                throw new Exception($"{e.ErrorCode}: {e.Message}");
-            }
-        }
+            var result = await Web.FetchJsonAsync(_connection, requestString);
+            return result;
+
+        } 
 
 
     }

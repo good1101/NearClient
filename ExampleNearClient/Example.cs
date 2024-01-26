@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Dynamic;
 using System.Globalization;
+using System.IO;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NearClient;
 using NearClient.KeyStores;
 using NearClient.Providers;
 using NearClient.Utilities;
+using NearClient.Utilities.Exceptions;
 
 namespace ExampleNearClient
 {
@@ -16,7 +21,7 @@ namespace ExampleNearClient
         const string KEY_DIR = "data";
         readonly KeyStore _keyStore = new UnencryptedFileSystemKeyStore(KEY_DIR);
         string _targetAccount;
-        
+        string _master;
         public void Init()
         {
             _near = new Near(config: new NearConfig()
@@ -28,9 +33,7 @@ namespace ExampleNearClient
                 KeyStore = _keyStore,
                 WalletUrl = $"https://wallet.{NETWORK_ID}.near.org/",
                 //Можно использовать например для отладки что бы просматривать запросы в Fiddler4.
-               // WebProxy = new System.Net.WebProxy("127.0.0.1:8888")
-
-
+                WebProxy = new System.Net.WebProxy("127.0.0.1:8888")
             });
         }
 
@@ -42,6 +45,8 @@ namespace ExampleNearClient
             {
                 string com = Console.ReadLine();
                 string[] parameters = com.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                if (parameters.Length < 1)
+                    continue;
                 var command = parameters[0].ToLower();
                 try
                 {
@@ -63,16 +68,66 @@ namespace ExampleNearClient
                         case "delete_account": await DeleteAccount(parameters); break;
                         case "del_key":
                         case "delete_key": await DeleteKey(parameters); break;
-
+                        case "method": await CallMethod(parameters); break;
+                        case "stake": await Staking(parameters); break;
+                        case "master": _master = _targetAccount; break;
+                        case "deploy": await Deploy(parameters); break;
+                        case "method_view": await MethodView(parameters); break;
 
                         default: Console.WriteLine($"unknown '{command}'"); break;
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.GetBaseException().Message);
                 }
             }
+        }
+
+        private async Task Deploy(string[] parameters)
+        {
+            Account account = await _near.AccountAsync(_targetAccount);
+            byte[] bContract = File.ReadAllBytes(parameters[1]);
+            var result = await account.DeployContractAsync(bContract);
+            Console.WriteLine(result.Transaction.Id);
+        }
+
+        private async Task MethodView(params string[] parameters)
+        {
+            string contratId = parameters[1];
+            string method = parameters[2];
+            Account account = await _near.AccountAsync(_targetAccount);
+            var res =  await account.ViewFunctionAsync(contratId, method, null);
+            byte[] bytes = res.result.ToObject<byte[]>();
+            var result = Encoding.UTF8.GetString(bytes) ;
+            Console.WriteLine(result);
+        }
+
+        private async Task CallMethod(params string[] parameters)
+        {
+            string contratId = parameters[1];
+            string method = parameters[2];
+            UInt128 amount = GetNearFormat(double.Parse(parameters[3], CultureInfo.InvariantCulture));
+            Account account = await _near.AccountAsync(_targetAccount);
+            var result = await account.FunctionCallAsync(parameters[1], parameters[2], null, amount: amount);
+            foreach(var receipt in result.Receipts)
+            {
+                foreach (var log in receipt.Outcome.Logs)
+                {
+                    Console.WriteLine(log);
+                }
+                Console.WriteLine(Encoding.UTF8.GetString(Convert.FromBase64String(receipt.Outcome.Status.SuccessValue)));
+            }
+            
+
+        }
+        
+        private async Task Staking(params string[] parameters)
+        {
+            Account account = await _near.AccountAsync(_targetAccount);
+            dynamic param = new ExpandoObject();
+            var result =  await account.FunctionCallAsync("genesislab.pool.f863973.m0", "deposit_and_stake", 
+                param, amount: GetNearFormat(5));
         }
 
         private async Task AddKey(params string[] data)
@@ -117,9 +172,9 @@ namespace ExampleNearClient
             var nAmount = GetNearFormat(amount);
          
             KeyPair privateKey = KeyPairEd25519.FromRandom64();
-
-            Account account = await _near.AccountAsync(_targetAccount);
             var publickKey = privateKey.GetPublicKey();
+            Account account = await _near.AccountAsync(_targetAccount);
+
             string newid = Guid.NewGuid().ToString("N");
 
             var res = await account.CreateAccountAsync(newid, publickKey, nAmount);
@@ -147,8 +202,20 @@ namespace ExampleNearClient
 
         private async Task AccountInfo()
         {
-            Account account = await _near.AccountAsync(_targetAccount);
-            AccountState state = await account.GetStateAsync();
+            Account account = null; 
+            AccountState state = null;
+            try
+            {
+                account = await _near.AccountAsync(_targetAccount);
+                state = await account.GetStateAsync();
+            }
+            catch (UnknownAccountException)
+            {
+                Console.WriteLine("UNKNOWN_ACCOUNT");
+                await _keyStore.RemoveKeyAsync(NETWORK_ID, _targetAccount);
+                Console.WriteLine("Account delete key");
+                return;
+            }
             foreach (var prop in state.GetType().GetProperties())
             {
                 if (prop.Name == "Amount")
@@ -198,8 +265,21 @@ namespace ExampleNearClient
 
         private async Task DeleteAccount(params string[] data)
         {
-            Account account = await _near.AccountAsync(_targetAccount);
-            await account.DeleteAccountAsync(beneficiaryId:data[1]);
+            try
+            {
+                var beneficiaryId = data.Length < 2 ? _master : data[1];
+                if (string.IsNullOrWhiteSpace(beneficiaryId))
+                {
+                    Console.WriteLine("Not beneficiaryId.");
+                    return;
+                }
+                Account account = await _near.AccountAsync(_targetAccount);
+                await account.DeleteAccountAsync(beneficiaryId);
+            }
+            catch(UnknownAccountException)
+            {
+                Console.WriteLine("UnknownAccount");
+            }
             await _keyStore.RemoveKeyAsync(NETWORK_ID, _targetAccount);
             Console.WriteLine($"Deleted account {_targetAccount}.");
             Console.WriteLine("Select other account.");

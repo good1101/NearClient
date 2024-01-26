@@ -14,7 +14,7 @@ namespace NearClient
         // Default amount of tokens to be send with the function calls. Used to pay for the fees
         // incurred while running the contract execution. The unused amount will be refunded back to
         // the originator.
-        public const int DefaultFuncCallAmount = 2000000;
+        public const ulong DefaultFuncCallAmount = 300000000000000;
 
         private const int TxStatusRetryNumber = 10;
         private const int TxStatusRetryWait = 500;
@@ -154,44 +154,30 @@ namespace NearClient
         public async Task FetchStateAsync()
         {
             _accessKey = null;
+            var rawState = await _connection.Provider.QueryAsync($"account/{_accountId}", "");
+            if (rawState == null)
+            {
+                return;
+            }
+            _state = new AccountState()
+            {
+                AccountId = rawState.account_id ?? _accountId,
+                Staked = rawState.staked ?? null,
+                Locked = rawState.locked,
+                Amount = rawState.amount,
+                CodeHash = rawState.code_hash,
+                StoragePaidAt = rawState.storage_paid_at,
+                StorageUsage = rawState.storage_usage
+            };
 
-            try
-            {
-                var rawState = await _connection.Provider.QueryAsync($"account/{_accountId}", "");
-                if (rawState == null)
-                {                    
-                    return;
-                }
-                _state = new AccountState()
-                {
-                    AccountId = rawState.account_id ?? _accountId,
-                    Staked = rawState.staked ?? null,
-                    Locked = rawState.locked,
-                    Amount = rawState.amount,
-                    CodeHash = rawState.code_hash,
-                    StoragePaidAt = rawState.storage_paid_at,
-                    StorageUsage = rawState.storage_usage
-                };
-            }
-            catch (Exception)
-            {
-                throw new Exception($"Failed to fetch state for '{_accountId}'");
-            }
 
             var publicKey = await _connection.Signer.GetPublicKeyAsync(_accountId, _connection.NetworkId);
             if (publicKey == null) return;
 
-            try
-            {
-                var rawAccessKey =
-                    await _connection.Provider.QueryAsync($"access_key/{_accountId}/{publicKey.ToString()}", "");
-                _accessKey = AccessKey.FromDynamicJsonObject(rawAccessKey);
-            }
-            catch (Exception)
-            {
-                throw new Exception(
-                    $"Failed to fetch access key for '{_accountId}' with public key {publicKey.ToString()}");
-            }
+            var rawAccessKey =
+                await _connection.Provider.QueryAsync($"access_key/{_accountId}/{publicKey.ToString()}", "");
+            _accessKey = AccessKey.FromDynamicJsonObject(rawAccessKey);
+
         }
 
         public async Task<FinalExecutionOutcome> FunctionCallAsync(string contractId, string methodName, dynamic args, ulong? gas = null, Nullable<UInt128> amount = null)
