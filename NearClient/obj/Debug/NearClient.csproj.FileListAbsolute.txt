@@ -1,9 +1,0 @@
-E:\VSProjects\MyProject\NearClient\NearClient\bin\Debug\NearClient.dll
-E:\VSProjects\MyProject\NearClient\NearClient\bin\Debug\NearClient.pdb
-E:\VSProjects\MyProject\NearClient\NearClient\bin\Debug\Newtonsoft.Json.dll
-E:\VSProjects\MyProject\NearClient\NearClient\bin\Debug\Newtonsoft.Json.xml
-E:\VSProjects\MyProject\NearClient\NearClient\obj\Debug\NearClient.csprojAssemblyReference.cache
-E:\VSProjects\MyProject\NearClient\NearClient\obj\Debug\NearClient.csproj.CoreCompileInputs.cache
-E:\VSProjects\MyProject\NearClient\NearClient\obj\Debug\NearClient.csproj.CopyComplete
-E:\VSProjects\MyProject\NearClient\NearClient\obj\Debug\NearClient.dll
-E:\VSProjects\MyProject\NearClient\NearClient\obj\Debug\NearClient.pdb
