@@ -107,9 +107,12 @@ namespace ExampleNearClient
         {
             string contratId = parameters[1];
             string method = parameters[2];
-            UInt128 amount = GetNearFormat(double.Parse(parameters[3], CultureInfo.InvariantCulture));
+            //  UInt128 amount = GetNearFormat(double.Parse(parameters[3], CultureInfo.InvariantCulture));
+            dynamic param = new ExpandoObject();
+            param.greeting = "new_message";
             Account account = await _near.AccountAsync(_targetAccount);
-            var result = await account.FunctionCallAsync(parameters[1], parameters[2], null, amount: amount);
+            
+            var result = await account.FunctionCallAsync(parameters[1], parameters[2], param, amount: UInt128.Zero);
             foreach(var receipt in result.Receipts)
             {
                 foreach (var log in receipt.Outcome.Logs)
@@ -175,7 +178,7 @@ namespace ExampleNearClient
             var publickKey = privateKey.GetPublicKey();
             Account account = await _near.AccountAsync(_targetAccount);
 
-            string newid = Guid.NewGuid().ToString("N");
+            string newid = $"{Guid.NewGuid().ToString("N")}.{account.AccountId}" ;
 
             var res = await account.CreateAccountAsync(newid, publickKey, nAmount);
             Console.WriteLine("Created " + newid);

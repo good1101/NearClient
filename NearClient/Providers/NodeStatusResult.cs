@@ -14,7 +14,7 @@ namespace NearClient.Providers
             var result = new NodeStatusResult()
             {
                 ChainId = jsonObject.chain_id,
-                RpcAddr = jsonObject.rpc_addr,
+                RpcAddr = jsonObject?.rpc_addr,
                 SyncInfo = new SyncInfo()
                 {
                     LatestBlockHash = jsonObject.sync_info.latest_block_hash,
